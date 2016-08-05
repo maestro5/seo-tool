@@ -20,7 +20,7 @@ run `$ rackup`
 ![Alt text](report_user.png?raw=true "User report page")
 ![Alt text](users_admin.png?raw=true "Admin users page")
 
-`./bin/seo --help` will be shown all the teams and their description
+`$ ./bin/seo --help` will be shown all the teams and their description
 ![Alt text](command_line.png?raw=true "Command line interface")
 
 Run tests `$ rspec spec`
