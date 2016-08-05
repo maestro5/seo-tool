@@ -1,0 +1,107 @@
+#!/usr/bin/env ruby
+ENV['RACK_ENV'] ||= 'development'
+
+require 'thor'
+require './models/dm_user'
+require './helpers/report_helpers'
+
+# ------------------------
+# Command Line Interface
+# ------------------------
+class Seo < Thor
+  @@user = DmUser.first(email: 'admin@example.com') ||
+    DmUser.create!(email: 'admin@example.com', password: 'password', admin: true)
+
+  include ReportHelpers
+
+  desc 'list', 'show seo reports list'
+  def list(_type = 'DESC')
+    user = DmUser.first(email: 'admin@example.com')
+    reports = user.file_reports.all
+    return say 'There are no reports!' unless reports.any?
+
+    say '№ / Created / Name'
+    reports.each_with_index do |report, index|
+      say "#{index + 1} #{date_format(report.created_at)} #{report.id}\n"
+    end
+  end
+
+  desc 'parse [url]', 'parse url, save and show report'
+  def parse(url)
+    page = generate_report(url)
+    if page.nil?
+      say("Url \'#{url}\' has an invalid format!")
+      return
+    end
+    report = @@user.file_reports.create(page)
+    report ? say("Report for #{url} was created") : say("Error: address #{url} does not exist!")
+  end
+
+  desc 'show [id]', 'show report'
+  def show(id)
+    report = find_report id
+    report ? show_report(report) : say("Report with id: #{id} does not exist!")
+  end
+
+  desc 'destroy [id]', 'delete report'
+  def destroy(id)
+    report = find_report id
+    return say("Report with id: #{id} does not exist!") unless report
+
+    selection = ask("Are you sure you want to delete the #{report.id}? [Y/N]:")
+    if selection.downcase == 'y'
+      say 'Report was deleted' if report.destroy
+    end
+  end
+
+  desc 'clear', 'delete all reports'
+  def clear
+    selection = ask('Are you sure you want to delete all reports? [Y/N]:')
+    if selection.downcase == 'y'
+      say 'All reports was deleted' if @@user.file_reports.destroy
+    end
+  end
+
+  private
+
+  def find_report(id)
+    if id.length < 15
+      id = id.to_i - 1
+      reports = @@user.file_reports.all
+      id = reports[id] ? reports[id].id : false
+    end
+
+    return false unless id
+    @@user.file_reports.find id
+  end
+
+  def show_report(report)
+    separator = '-' * 65 + "\n"
+
+    say "\nReport for #{report.url} created: #{date_format(report.created_at)}\n\n" \
+      "Title: #{report.title.strip}\n" \
+      "Description: #{report.description}\n" \
+      "Keywords: #{report.keywords}\n" \
+      "Server: #{report.server}\n" \
+      "Location: #{report.location}\n" \
+      "IP: #{report.ip}\n"
+
+    say "\nLinks\n" +
+      separator +
+      "[Name] [Url] [Rel] [Target]\n" +
+      separator
+
+    report.links.each do |property|
+      say "[#{property[:name].strip}] " \
+        "[#{property[:url]}] " \
+        "[#{property[:rel]}] " \
+        "[#{property[:target]}]\n"
+    end
+  end
+
+  def date_format(date)
+    date.strftime('%d.%m.%Y %H:%M:%S')
+  end
+end # Seo
+
+Seo.start(ARGV)

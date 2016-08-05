@@ -1,0 +1,11 @@
+default: &default
+  :delimiter:   "*"
+  :format:      ".report"
+  
+development:
+  <<: *default
+  :folder: public/reports/
+
+test:
+  <<: *default
+  :folder: public/reports/test/

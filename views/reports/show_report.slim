@@ -1,0 +1,53 @@
+header.row
+  .col-md-12
+    h3
+      = "Report for "
+      a href = @report.url = short_url(@report.url)
+    h4
+      = "Date: #{date_format(@report.created_at)}"
+    - if authenticated?
+      form action="/reports/#{@report.id}" method="post"
+        input type="hidden" name="_method" value="DELETE"
+        input class="btn btn-danger" type="submit" value="Delete"
+main
+  section.info.row
+    .col-md-12
+      table.table.table-bordered
+        caption Info
+        tr
+          th Name
+          th Value
+        tr
+          td title
+          td = @report.title
+        tr
+          td description
+          td = @report.description
+        tr
+          td keywords
+          td = @report.keywords
+        tr
+          td server
+          td = @report.server
+        tr
+          td location
+          td = @report.location
+        tr
+          td ip
+          td = @report.ip
+  section.links.row
+    .col-md-12
+      table.table.table-bordered
+        caption Page links
+        tr
+          th Name
+          th Url
+          th Rel
+          th Target
+        - @report.links.each do |property|
+          tr
+            td = property[:name]
+            td 
+              a href = property[:url] = property[:url]
+            td = property[:rel]
+            td = property[:target]

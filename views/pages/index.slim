@@ -1,0 +1,27 @@
+== slim :"shared/_errors", locals: { obj: @report }
+.row#url.dbl_space
+  .col-md-6.col-md-offset-3
+    form.input-group action="/reports" method="post"
+      input.form-control type="text" placeholder="url" name="url" required=true
+      span.input-group-btn
+        button.btn.btn-primary type="submit" Run
+
+.row.dbl_space
+  .col-md-12
+    - if @reports.any?
+      table.table.table-hover
+        thead
+          th Url
+          th Created
+          th Actions
+        -@reports.each_with_index do |report, i|
+          tr id="report_#{i}"
+            td 
+              a href = report.url = short_url(report.url)
+            td= date_format(report.created_at)
+            td
+              form.form_btns action="/reports/#{report.id}" method="POST"
+                input type="hidden" name="_method" value="DELETE"
+                .btn-group
+                  a.btn.btn-primary href="/reports/#{report.id}" View
+                  input.btn.btn-danger type="submit" value="Delete"

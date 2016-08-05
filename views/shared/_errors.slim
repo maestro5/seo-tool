@@ -1,0 +1,7 @@
+- if obj && obj.errors.any?
+  - obj.errors.full_messages.each do |msg|
+    div.alert.alert-danger.alert-dismissible.fade.in role="alert"  
+      a.close[data-dismiss="alert"]
+        | &#215
+      h2.panel-title = 'User not created!' if obj.is_a?(DmUser)
+      p.panel-body = msg

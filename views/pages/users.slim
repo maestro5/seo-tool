@@ -1,0 +1,32 @@
+ section.info.row
+    .col-md-12
+      - if @users.any?
+        table.table.table-hover
+          tr
+            th Id
+            th Email
+            th Storage
+            th Admin
+            th File reports
+            th Data reports
+            th Actions
+          - @users.each do |user|
+            tr id="user_#{user.id}"
+              td = user.id
+              td = user.email
+              td = user.storage
+              td = user.admin
+              td class='file_reports'
+                = user.file_reports.all.count
+              td class='data_reports'
+                = user.dm_reports.count
+              td              
+                form.form_btns action="/users/#{user.id}" method="post"
+                  .btn-group
+                    a.btn.btn-primary href="/users/#{user.id}/clear_files" Clear files
+                    a.btn.btn-primary href="/users/#{user.id}/clear_data" Clear data
+                    input type="hidden" name="_method" value="DELETE"
+                    - if user.admin
+                      input class="btn btn-danger" disabled="disabled" type="submit" value="Delete"
+                    - else
+                      input class="btn btn-danger" type="submit" value="Delete"

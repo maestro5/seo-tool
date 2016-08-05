@@ -1,0 +1,24 @@
+.row
+  .col-md-4.col-md-offset-4
+    .page-header
+      h2 Select a storage
+    form action="/settings" method="post"
+      .radio
+        label
+          <input type="radio" name="storage" value="file" #{file_storage?}>
+          Option File
+      .radio
+        label
+          <input type="radio" name="storage" value="dm" #{dm_storage?}>
+          Option Database with DataMapper
+      .radio
+        label
+          <input type="radio" name="storage" value="se" #{se_storage?}>
+          Option Database with Sequel
+      .radio
+        label
+          <input type="radio" name="storage" value="sql" #{sql_storage?}>
+          Option Database with SQL
+      .btn-group
+        a.btn.btn-primary href="/settings/exit" Exit 
+        button.btn.btn-primary type="submit" Save
