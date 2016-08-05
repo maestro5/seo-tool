@@ -3,9 +3,13 @@
 
 ## Install
 Install gems `$ bundle install`
+
 Set database parameters in `config/database.yml`
+
 Set file storage parameters in `config/file_storage.yml`
+
 Setup databases `$ rake db:setup`
+
 Create demo data `$ rake db:seed`
 
 ## Usage
