@@ -32,13 +32,20 @@ module ReportHelpers
     prefix = 'http://'
     url = url.chomp('/')
     url = prefix + url unless url.include? prefix
+    ip  = ''
 
     response = HTTParty.get(url)
     html_doc = Nokogiri::HTML(response)
     geo      = GeoIP.new('./db/GeoLiteCity.dat').city(url.gsub('http://', ''))
 
-    location = geo.country_name
-    location += ', ' + geo.city_name unless geo.city_name.empty?
+    if geo
+      location = geo.country_name
+      location += ', ' + geo.city_name unless geo.city_name.empty?
+      ip = geo.ip
+    else
+      location = 'undefined'
+      ip = 'undefined'
+    end
 
     description, keywords = ''
     html_doc.css('meta').each do |el|
@@ -53,7 +60,7 @@ module ReportHelpers
 
     {
       url:         url,
-      ip:          geo.ip,
+      ip:          ip,
       location:    location,
       server:      response.headers['server'],
       title:       html_doc.title,
